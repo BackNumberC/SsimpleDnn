@@ -4,7 +4,7 @@
 #include <vector>
 using namespace std;
 class Neuron {
-private:
+public:
 	vector<float> weight;
 	vector<vector<float>> Batchweight;
 	float bias;
@@ -12,7 +12,7 @@ private:
 	float theta;
 	float z;
 	float a;
-public:
+
 	~Neuron();
 	friend class Model;
 	void Initialize(int num);

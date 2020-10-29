@@ -13,7 +13,7 @@ using namespace std;
 
 Model::Model(double learning_rate,unsigned batch_size, unsigned epoch,unsigned output_num,Size input_size)
 {
-	int input_num = input_size.height*input_size.width;
+	this->input_num = input_size.height * input_size.width;
 	vector<Neuron> layer(input_num);
 	NN.push_back(layer);
 	this->learning_rate = learning_rate;
@@ -144,7 +144,6 @@ void Model::Train_data(const string& Image_path)
 {
 	ifstream inImages(Image_path);
 	string imageName;
-	//vector<string> vecImages;
 	
 	while(inImages >> imageName)
 	{
@@ -162,7 +161,8 @@ void Model::Train_data(const string& Image_path)
 	for (auto it : Set_Label)
 		cout << it << " ";
 	cout << endl;
-	while (epoch-- > 0)
+	int epoch_num = epoch;
+	while (epoch_num-- > 0)
 	{
 		Shuffle_data(vecImages,vecLabels);
 		for (unsigned i = 0; i < total_num; i++)
@@ -182,7 +182,7 @@ void Model::Train_data(const string& Image_path)
 				Update_paramter();
 			}
 		}
-		Evalution_model();
+		Evalution_model(epoch_num);
 	}
 	cout << "-----------------End Training----------------- "<<endl;
 }
@@ -218,7 +218,8 @@ void Model::Test_data(const string& Image_path)
 	cout << "accuracy:" << (float)true_num /total_num << endl;
 	cout << "-----------------End Testing----------------" << endl;
 }
-void Model::Evalution_model() 
+
+void Model::Evalution_model(int epoch_num) 
 {
 	int total_num = vecImages.size();
 	int True_num = 0;
@@ -240,7 +241,7 @@ void Model::Evalution_model()
 			loss_temp += (-label[i] * log(NN.back()[i].a));
 		}
 		loss.push_back(loss_temp);
-		//if (Judge_result(output, ImageLebel))
+		
 		if (Judge_result(output, vecLabels[i]))
 			True_num++;
 	}
@@ -248,9 +249,9 @@ void Model::Evalution_model()
 	for (auto it : loss)
 		Total_loss += it;
 	loss.clear();
-	float loss_epoch = Total_loss / total_num;
-	float accuracy = (float)True_num / total_num;
-	cout << "Epoch_num:" <<epoch+1<<" "<< "loss:" <<loss_epoch<<" "<<"accuracy: "<<accuracy<< endl;
+	loss_epoch = Total_loss / total_num;
+	accuracy = (float)True_num / total_num;
+	cout << "Epoch_num:" <<epoch_num+1<<" "<< "loss:" <<loss_epoch<<" "<<"accuracy: "<<accuracy<< endl;
 }
 
 bool Model::Judge_result(vector<float> input, signed answer) 
