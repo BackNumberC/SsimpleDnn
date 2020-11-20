@@ -27,14 +27,14 @@ public:
 
 	friend class Neuron;
 	vector<float> Get_active(int Layer_num);
-	vector<float> Feed_forward(vector<float> input);
+	vector<float> Feed_forward(vector<float> &input);
 	void Update_paramter();
-	void Back_propagation(vector<float> label);
-	void Train_data(const string& Image_path);
-	void Test_data(const string& Image_path);
+	void Back_propagation(vector<float> &label);
+	void Train_data(const string &Image_path);
+	void Test_data(const string &Image_path);
 	void Evalution_model(int epoch_num);
 	void Add_layer(int num);
-	bool Judge_result(vector<float> input, signed res);
+	bool Judge_result(vector<float> &input, signed res);
 	void Shuffle_data(vector<Mat> &vecImage,vector<int> &vecLabel);
 	int Get_Label(string Imagename);
 };

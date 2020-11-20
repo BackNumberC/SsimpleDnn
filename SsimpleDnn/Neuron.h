@@ -16,7 +16,7 @@ public:
 	~Neuron();
 	friend class Model;
 	void Initialize(int num);
-	void Active(vector<float> input);
+	void Active(vector<float> &input);
 	float Relu(float z);
 	float Sigmoid(float z);
 	int Relu_derivative(float z);

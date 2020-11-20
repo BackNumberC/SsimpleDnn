@@ -149,7 +149,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Minst.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Neuron.h" />
     <ClInclude Include="tinystr.h" />
@@ -158,7 +157,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Minst.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Neuron.cpp" />
     <ClCompile Include="tinystr.cpp" />

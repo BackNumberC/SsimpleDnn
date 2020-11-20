@@ -26,7 +26,7 @@ void Neuron::Initialize(int num)
 	cout << bias << endl;*/
 }
 
-void Neuron::Active(vector<float> input) 
+void Neuron::Active(vector<float> &input) 
 {
 	z = 0;
 	for (unsigned i = 0; i < input.size(); i++)

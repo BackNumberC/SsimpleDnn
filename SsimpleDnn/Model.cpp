@@ -8,6 +8,7 @@
 #include <opencv2/core/core.hpp>
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/highgui/highgui.hpp"
+#include "ctime"
 using namespace cv;
 using namespace std;
 
@@ -40,20 +41,29 @@ void Model::Add_layer(int Layer_size)
 vector<float> Model::Get_active(int Layer_num) 
 {
 	vector<float> res;
-	for (int i = 0; i < NN[Layer_num].size(); i++)
+	int size = NN[Layer_num].size();
+	for (unsigned i = 0; i < size; i++)
 		res.push_back(NN[Layer_num][i].a);
 	return res;
 }
 
-vector<float> Model::Feed_forward(vector<float> input) 
+vector<float> Model::Feed_forward(vector<float> &input) 
 {
+	
 	//将数据输入到一层
 	for (unsigned i = 0; i < input.size(); i++) 
 		NN[0][i].a = input[i]/255.0;
+	
 	//前向传播
-	for (unsigned i = 1; i < NN.size()-1; i++) 
+	for (unsigned i = 1; i < NN.size() - 1; i++) 
+	{
+		vector<float> layer_input = Get_active(i - 1);
 		for (unsigned j = 0; j < NN[i].size(); j++)
-			NN[i][j].Active(Get_active(i - 1));
+		{
+			NN[i][j].Active(layer_input);
+		}	
+	}
+		
 	float sum = 0;
 	vector<float> last = Get_active(NN.size() - 2);
 	for (unsigned j = 0; j < NN.back().size(); j++) 
@@ -66,18 +76,20 @@ vector<float> Model::Feed_forward(vector<float> input)
 		NN.back()[j].z += NN.back()[j].bias;
 		sum += exp(NN.back()[j].z);
 	}
+
+	
+	//取出前向传播结果
+	vector<float> answer;
 	for (unsigned j = 0; j < NN.back().size(); j++)
 	{
 		NN.back()[j].a = (exp(NN.back()[j].z) / sum);
+		answer.push_back(NN.back()[j].a);
 	}
-	//取出前向传播结果
-	vector<float> answer;
-	for (const auto it : NN.back())
-		answer.push_back(it.a);
+
 	return answer;
 }
 
-void Model::Back_propagation(vector<float> label) 
+void Model::Back_propagation(vector<float> &label) 
 {
 	//求取输出层的theta
 	for (unsigned i = 0; i < NN.back().size(); i++) 
@@ -95,10 +107,10 @@ void Model::Back_propagation(vector<float> label)
 		for (unsigned j = 0; j < NN[i].size(); j++) 
 		{
 			NN[i][j].theta = 0;
-			for (unsigned k = 0; k < NN[i + 1].size(); k++) 
+			for (unsigned k = 0; k < NN[i+1].size(); k++) 
 			{
 				//NN[i][j].theta += NN[i + 1][k].theta * NN[i + 1][k].weight[j] * NN[i][j].Relu_derivative(NN[i][j].z);
-				NN[i][j].theta += NN[i + 1][k].theta * NN[i + 1][k].weight[j] * (1 - NN[i][j].a) * NN[i][j].a;
+				NN[i][j].theta += NN[i+1][k].theta * NN[i+1][k].weight[j] * (1 - NN[i][j].a) * NN[i][j].a;
 			}		
 		}
 	}
@@ -140,7 +152,7 @@ void Model::Update_paramter() {
 	}
 }
 
-void Model::Train_data(const string& Image_path)
+void Model::Train_data(const string &Image_path)
 {
 	ifstream inImages(Image_path);
 	string imageName;
@@ -162,11 +174,16 @@ void Model::Train_data(const string& Image_path)
 		cout << it << " ";
 	cout << endl;
 	int epoch_num = epoch;
+	
 	while (epoch_num-- > 0)
-	{
+	{		
+		clock_t startTime, endTime;
+		startTime = clock();
+
 		Shuffle_data(vecImages,vecLabels);
 		for (unsigned i = 0; i < total_num; i++)
 		{	
+			
 			Mat src = vecImages[i];
 			vector<float> vec(src.reshape(0,1));
 			vector<float> output = Feed_forward(vec);
@@ -183,6 +200,8 @@ void Model::Train_data(const string& Image_path)
 			}
 		}
 		Evalution_model(epoch_num);
+		endTime = clock();
+		cout << "Traing Time:" << (double)(endTime - startTime) / CLOCKS_PER_SEC << "s" << endl;
 	}
 	cout << "-----------------End Training----------------- "<<endl;
 }
@@ -215,7 +234,7 @@ void Model::Test_data(const string& Image_path)
 			cout << it << " ";
 		cout<<endl;
 	}
-	cout << "accuracy:" << (float)true_num /total_num << endl;
+	cout << "Accuracy:" << (float)true_num /total_num * 100.0 << "%" << endl;
 	cout << "-----------------End Testing----------------" << endl;
 }
 
@@ -251,10 +270,10 @@ void Model::Evalution_model(int epoch_num)
 	loss.clear();
 	loss_epoch = Total_loss / total_num;
 	accuracy = (float)True_num / total_num;
-	cout << "Epoch_num:" <<epoch_num+1<<" "<< "loss:" <<loss_epoch<<" "<<"accuracy: "<<accuracy<< endl;
+	cout << "Epoch_num:" <<epoch_num+1<<" "<< "Loss:" <<loss_epoch<<" "<<"Accuracy: "<<accuracy*100.0<<"%   ";
 }
 
-bool Model::Judge_result(vector<float> input, signed answer) 
+bool Model::Judge_result(vector<float> &input, signed answer) 
 {
 	unsigned count = 0;
 	int res = 0;

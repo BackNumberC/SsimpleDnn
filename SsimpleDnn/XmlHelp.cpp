@@ -46,44 +46,50 @@ void XMLFile::CreateXML(Model& model)
 	}
 	m_pDocument->LinkEndChild(m_pDeclaration);
 
-	//创建根节点
+	//创建根节点NetworkNeuron
 	TiXmlElement* pRoot = new TiXmlElement("NetworkNeuron");
 	if (NULL == pRoot)
 	{
 		return;
 	}
+
 	//关联XML文档，成为XML文档的根节点
 	m_pDocument->LinkEndChild(pRoot);
 
+	//设置根节点的属性
 	pRoot->SetAttribute("Epoch", model.epoch);
 	pRoot->SetAttribute("Batch_size", model.batch_size);
 	pRoot->SetAttribute("Output_num", model.output_num);
 	pRoot->SetAttribute("Input_num", model.input_num);
 
+	//设置子节点Accuracy
 	string bias = to_string(model.accuracy);
 	TiXmlElement* pAccuracy = new TiXmlElement("Accuracy");
 	TiXmlText* pAccuracyText = new TiXmlText(bias.c_str());
 	pAccuracy->LinkEndChild(pAccuracyText);
 
+	//设置子节点Loss
 	string loss = to_string(model.loss_epoch);
 	TiXmlElement* ploss = new TiXmlElement("Loss");
 	TiXmlText* plossText = new TiXmlText(loss.c_str());
 	ploss->LinkEndChild(plossText);
 
+	//设置子节点Learning_rate
 	string rate = to_string(model.learning_rate);
 	TiXmlElement* pRate = new TiXmlElement("Learning_rate");
 	TiXmlText* pRateText = new TiXmlText(rate.c_str());
 	pRate->LinkEndChild(pRateText);
 
+	//子节点关联根节点
 	pRoot->LinkEndChild(pAccuracy);
 	pRoot->LinkEndChild(ploss);
 	pRoot->LinkEndChild(pRate);
+	cout << "----------Parameters  Finished------------" << endl;
 
-
+	//设置子节点Layer
 	int size = model.NN.size();
 	for (int i = 1; i < size; i++) 
 	{
-		//创建孩子节点
 		TiXmlElement* pLayer = new TiXmlElement("Layer");
 		if (NULL == pLayer)
 		{
@@ -92,6 +98,7 @@ void XMLFile::CreateXML(Model& model)
 		pLayer->SetAttribute("No", i);
 		pLayer->SetAttribute("Num", size);
 
+		//设置子节点Neuron
 		int length = model.NN[i].size();
 		for (int k = 0; k < length; k++) 
 		{
@@ -102,6 +109,7 @@ void XMLFile::CreateXML(Model& model)
 			TiXmlElement* pWeight = new TiXmlElement("Weight");
 			TiXmlText* pWeightText;
 
+			//设置Weights
 			int num = model.NN[i][k].weight.size();
 			for (int j = 0; j < num; j++) 
 			{
@@ -110,6 +118,7 @@ void XMLFile::CreateXML(Model& model)
 				pWeight->LinkEndChild(pWeightText);
 			}
 
+			//设置Bias
 			string bias = to_string(model.NN[i][k].bias);
 			TiXmlElement* pBias = new TiXmlElement("Bias");
 			TiXmlText* pBiasText = new TiXmlText(bias.c_str());
@@ -122,14 +131,14 @@ void XMLFile::CreateXML(Model& model)
 		pRoot->LinkEndChild(pLayer);
 	}
 	m_pDocument->SaveFile(m_xmlFileName);
-
+	cout << "---------Weights and Bias Finished---------" << endl;
 	cout << "-----------------End Saving----------------" << endl;
 }
 
 Model XMLFile::LoadXML() 
 {
+	cout << "--------------Start Loading---------------" << endl;
 	m_pDocument->LoadFile(m_xmlFileName);
-	
 	TiXmlElement* pNN = m_pDocument->RootElement();
 
 	vector<int> Param;
@@ -138,13 +147,13 @@ Model XMLFile::LoadXML()
 	{
 		Param.push_back(atoi(pAttr->Value()));
 	}
-
 	TiXmlElement* pAcc = pNN->FirstChildElement();
 	TiXmlElement* ploss = pAcc->NextSiblingElement();
 	TiXmlElement* pRate = ploss->NextSiblingElement();
 
 	//加载Model参数
 	Model model(atof(pRate->GetText()), Param.at(0), Param.at(1), Param.at(2), Size(sqrt(Param.at(3)), sqrt(Param.at(3))));
+	cout << "----------Parameters  Finished------------" << endl;
 
 	//加载Neuron参数
 	TiXmlElement* pLayer = pRate->NextSiblingElement();
@@ -159,9 +168,9 @@ Model XMLFile::LoadXML()
 			TiXmlElement* pWeight = pNeuron->FirstChildElement();
 			TiXmlElement* pBias = pWeight->NextSiblingElement();
 
-			string pAcc_Value = pWeight->GetText();
-			istringstream in(pAcc_Value);
-			vector<float> result((istream_iterator<float>(in)), istream_iterator<float>());
+			string pWeight_Value = pWeight->GetText();
+			istringstream Weight(pWeight_Value);
+			vector<float> result((istream_iterator<float>(Weight)), istream_iterator<float>());
 
 			n.weight = result;
 			n.bias = atof(pBias->GetText());
@@ -171,6 +180,7 @@ Model XMLFile::LoadXML()
 		model.NN.push_back(layer);
 		pLayer = pLayer->NextSiblingElement();
 	}
-
+	cout << "---------Weights and Bias Finished--------" << endl;
+	cout << "---------------End Loading----------------" << endl;
 	return model;
 }

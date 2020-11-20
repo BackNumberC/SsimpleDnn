@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="源文件\Xml">
+      <UniqueIdentifier>{01fabf38-2c8f-4922-bcbf-35dbe00b7c63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Xml.h">
+      <UniqueIdentifier>{496dabb4-abcb-4a40-a95d-ddbe1d659029}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Model.h">
@@ -21,17 +27,14 @@
     <ClInclude Include="Neuron.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Minst.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="tinystr.h">
-      <Filter>头文件</Filter>
+      <Filter>头文件\Xml.h</Filter>
     </ClInclude>
     <ClInclude Include="tinyxml.h">
-      <Filter>头文件</Filter>
+      <Filter>头文件\Xml.h</Filter>
     </ClInclude>
     <ClInclude Include="XmlHelp.h">
-      <Filter>头文件</Filter>
+      <Filter>头文件\Xml.h</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -44,23 +47,20 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Minst.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="tinystr.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="tinyxmlerror.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\Xml</Filter>
     </ClCompile>
     <ClCompile Include="tinyxmlparser.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\Xml</Filter>
     </ClCompile>
-    <ClCompile Include="tinyxml.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="tinystr.cpp">
+      <Filter>源文件\Xml</Filter>
     </ClCompile>
     <ClCompile Include="XmlHelp.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\Xml</Filter>
+    </ClCompile>
+    <ClCompile Include="tinyxml.cpp">
+      <Filter>源文件\Xml</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -12,12 +12,10 @@ public:
 	void CreateXML(Model& model);//创建XML文件
 	Model LoadXML();// 加载XML文件
 	
-
 private:
 	char* m_xmlFileName;
 	TiXmlDocument* m_pDocument;
 	TiXmlDeclaration* m_pDeclaration;
 };
-
 #endif // !XMLHELP_H
 
