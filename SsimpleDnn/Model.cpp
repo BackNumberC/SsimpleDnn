@@ -201,7 +201,7 @@ void Model::Train_data(const string &Image_path)
 		}
 		Evalution_model(epoch_num);
 		endTime = clock();
-		cout << "Traing Time:" << (double)(endTime - startTime) / CLOCKS_PER_SEC << "s" << endl;
+		//cout << "Traing Time:" << (double)(endTime - startTime) / CLOCKS_PER_SEC << "s" << endl;
 	}
 	cout << "-----------------End Training----------------- "<<endl;
 }
